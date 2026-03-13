@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mission Study Tracker</title>
+<!-- Tailwind CSS with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange: '#FF8C42',
+              pink: '#FF3C78',
+              brown: '#4A3728',
+              dark: '#0A0A0A',
+              card: '#161616'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-animations">
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(255, 140, 66, 0.2); }
+      50% { box-shadow: 0 0 25px rgba(255, 140, 66, 0.4); }
+    }
+    .accent-glow {
+      animation: glow 4s infinite ease-in-out;
+    }
+    .progress-transition {
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="bg-brand-dark text-gray-100 min-h-screen font-sans selection:bg-brand-orange/30">
+<!-- BEGIN: MainContainer -->
+<main class="max-w-3xl mx-auto px-6 py-12 space-y-12">
+<!-- BEGIN: Header -->
+<header class="text-center space-y-2">
+<h1 class="text-3xl font-bold tracking-tight text-white">MISSION CONTROL</h1>
+<p class="text-gray-500 text-sm uppercase tracking-widest">Personal Productivity Terminal</p>
+</header>
+<!-- END: Header -->
+<!-- BEGIN: VisionBoardSection -->
+<section class="space-y-4" data-purpose="dream-university-vision" id="vision-board">
+<div class="relative group aspect-[21/9] w-full bg-brand-card rounded-2xl overflow-hidden border border-white/5 accent-glow">
+<img alt="Dream University" class="w-full h-full object-cover opacity-60" id="vision-image" src="https://drive.google.com/file/d/1E2he_3sYVzIPUaohVilQCb1nj_9f7KTw/view?usp=sharing"/>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+<label class="cursor-pointer bg-white text-black px-6 py-2 rounded-full font-medium hover:bg-brand-orange hover:text-white transition-colors" for="vision-upload">
+            Upload Vision
+          </label>
+<input accept="image/*" class="hidden" id="vision-upload" type="file"/>
+</div>
+<div class="absolute bottom-4 left-6">
+<p class="text-xs font-bold uppercase tracking-tighter text-brand-orange opacity-80">DEK 70 </p>
+<h2 class="text-xl font-semibold text-white">GOAL : MEDICINE KKU</h2>
+</div>
+</div>
+</section>
+<!-- END: VisionBoardSection -->
+<!-- BEGIN: StudyCounterSection -->
+<section class="bg-brand-card p-8 rounded-2xl border border-white/5 space-y-6" data-purpose="study-time-counter" id="tracker-display">
+<div class="flex justify-between items-end">
+<div>
+<h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Today's Progress</h3>
+<div class="flex items-baseline gap-2">
+<span class="text-6xl font-black text-white" id="current-hours">0</span>
+<span class="text-2xl text-gray-500">/ 8h</span>
+</div>
+</div>
+<div class="text-right">
+<span class="text-brand-orange font-mono font-bold text-xl" id="percent-complete">0%</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="h-3 w-full bg-black rounded-full overflow-hidden border border-white/5">
+<div class="h-full bg-gradient-to-r from-brand-pink to-brand-orange progress-transition" id="progress-bar" style="width: 0%"></div>
+</div>
+</section>
+<!-- END: StudyCounterSection -->
+<!-- BEGIN: MissionChecklistSection -->
+<section class="space-y-6" data-purpose="daily-mission-list" id="mission-checklist">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-semibold text-white flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-brand-pink"></span>
+          Daily Missions
+        </h3>
+<button class="text-xs bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg border border-white/10 transition-colors" id="add-task-btn">
+          + Add Mission
+        </button>
+</div>
+<!-- Task Input Modal (Hidden by default) -->
+<div class="hidden bg-brand-card p-4 rounded-xl border border-brand-orange/30 space-y-4 mb-4" id="task-modal">
+<div class="grid grid-cols-3 gap-3">
+<input class="col-span-2 bg-black border-none rounded-lg text-sm text-white focus:ring-1 focus:ring-brand-orange" id="task-input-name" placeholder="Mission Name..." type="text"/>
+<input class="bg-black border-none rounded-lg text-sm text-white focus:ring-1 focus:ring-brand-orange" id="task-input-hours" placeholder="Hrs" type="number"/>
+</div>
+<div class="flex justify-end gap-2">
+<button class="text-xs text-gray-500 px-3 py-1" id="cancel-task">Cancel</button>
+<button class="text-xs bg-brand-orange text-white px-4 py-1 rounded-md font-bold" id="save-task">Deploy</button>
+</div>
+</div>
+<!-- Tasks Container -->
+<ul class="space-y-3" id="tasks-list">
+<!-- Tasks will be injected here by JS -->
+</ul>
+<div class="pt-4 flex justify-center">
+<button class="flex items-center gap-2 bg-brand-orange/10 border border-brand-orange/20 text-brand-orange px-8 py-3 rounded-xl font-bold uppercase tracking-wider text-xs hover:bg-brand-orange hover:text-white transition-all active:scale-95 group" id="complete-day-btn">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+        Complete &amp; Save Day
+      </button>
+</div>
+</section>
+<!-- END: MissionChecklistSection -->
+<!-- BEGIN: StudyHistorySection -->
+<section class="space-y-6" data-purpose="study-history" id="study-history">
+<div class="pt-8 border-t border-white/5">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-semibold text-white flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-brand-orange"></span>
+          Study Logs
+        </h3>
+<div class="flex gap-4 text-[10px] uppercase tracking-widest font-bold">
+<div class="text-gray-500">Weekly Total: <span class="text-brand-orange" id="weekly-total">0h</span></div>
+<div class="text-gray-500">Streak: <span class="text-brand-pink" id="streak-count">0 Days</span></div>
+</div>
+</div>
+<div class="space-y-4" id="history-container">
+<!-- History entries will be injected here -->
+<div class="text-center py-12 bg-white/5 rounded-2xl border border-dashed border-white/10">
+<p class="text-gray-500 text-xs uppercase tracking-widest">No mission logs recorded yet</p>
+</div>
+</div>
+</div>
+</section>
+<!-- END: StudyHistorySection -->
+<!-- BEGIN: Footer -->
+<footer class="pt-8 border-t border-white/5 text-center">
+<p class="text-[10px] text-gray-600 uppercase tracking-[0.2em]">Focus Mode Active • Local Storage Sync Enabled</p>
+</footer>
+<!-- END: Footer -->
+</main>
+<!-- END: MainContainer -->
+<!-- BEGIN: InteractivityScript -->
+<script data-purpose="application-logic">
+    // --- State Management ---
+    let missions = JSON.parse(localStorage.getItem('studyMissions')) || [
+      { id: 1, name: 'Advanced Calculus Practice', hours: 3, completed: false },
+      { id: 2, name: 'History Thesis Drafting', hours: 2, completed: false }
+    ];
+    let studyHistory = JSON.parse(localStorage.getItem('studyHistory')) || [];
+    let dailyGoal = 8;
+
+    // --- DOM Elements ---
+    const tasksList = document.getElementById('tasks-list');
+    const currentHoursDisplay = document.getElementById('current-hours');
+    const percentDisplay = document.getElementById('percent-complete');
+    const progressBar = document.getElementById('progress-bar');
+    const taskModal = document.getElementById('task-modal');
+    const visionUpload = document.getElementById('vision-upload');
+    const visionImage = document.getElementById('vision-image');
+    const historyContainer = document.getElementById('history-container');
+    const weeklyTotalDisplay = document.getElementById('weekly-total');
+    const streakDisplay = document.getElementById('streak-count');
+
+    // --- Core Functions ---
+    function render() {
+      // 1. Render Current Missions
+      tasksList.innerHTML = '';
+      let totalCompletedHours = 0;
+
+      missions.forEach(mission => {
+        if (mission.completed) totalCompletedHours += parseFloat(mission.hours);
+
+        const li = document.createElement('li');
+        li.className = `group flex items-center justify-between p-4 rounded-xl border transition-all ${mission.completed ? 'bg-brand-orange/5 border-brand-orange/20 opacity-60' : 'bg-brand-card border-white/5'}`;
+        
+        li.innerHTML = `
+          <div class="flex items-center gap-4">
+            <input type="checkbox" ${mission.completed ? 'checked' : ''} 
+              onchange="toggleMission(${mission.id})"
+              class="w-5 h-5 rounded border-gray-700 bg-black text-brand-orange focus:ring-brand-orange focus:ring-offset-black transition-all cursor-pointer">
+            <div class="flex flex-col">
+              <span class="text-sm font-medium ${mission.completed ? 'line-through text-gray-500' : 'text-gray-200'}">${mission.name}</span>
+              <span class="text-[10px] uppercase tracking-wider text-gray-500">${mission.hours} HOURS</span>
+            </div>
+          </div>
+          <button onclick="deleteMission(${mission.id})" class="opacity-0 group-hover:opacity-100 p-2 text-gray-600 hover:text-brand-pink transition-opacity">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        `;
+        tasksList.appendChild(li);
+      });
+
+      // Update Stats Display
+      currentHoursDisplay.innerText = totalCompletedHours;
+      const percent = Math.min(Math.round((totalCompletedHours / dailyGoal) * 100), 100);
+      percentDisplay.innerText = `${percent}%`;
+      progressBar.style.width = `${percent}%`;
+
+      // 2. Render History
+      renderHistory();
+
+      // Save to Storage
+      localStorage.setItem('studyMissions', JSON.stringify(missions));
+      localStorage.setItem('studyHistory', JSON.stringify(studyHistory));
+    }
+
+    function renderHistory() {
+      if (studyHistory.length === 0) return;
+      
+      historyContainer.innerHTML = '';
+      
+      let totalWeeklyHours = 0;
+      const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+
+      // Sort history by date descending
+      const sortedHistory = [...studyHistory].sort((a, b) => b.id - a.id);
+
+      sortedHistory.forEach(entry => {
+        if (entry.id > sevenDaysAgo) {
+          totalWeeklyHours += entry.totalHours;
+        }
+
+        const date = new Date(entry.id).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        
+        const entryEl = document.createElement('div');
+        entryEl.className = 'bg-brand-card border border-white/5 rounded-2xl p-5 space-y-3';
+        
+        const missionsHtml = entry.completedTasks.map(task => `
+          <div class="flex items-center gap-2 text-xs text-gray-400">
+            <svg class="w-3 h-3 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+            <span>${task}</span>
+          </div>
+        `).join('') || '<p class="text-[10px] text-gray-600 italic">No missions completed</p>';
+
+        entryEl.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">${date}</p>
+              <h4 class="text-sm font-semibold text-white mt-1">${entry.totalHours} Hours Logged</h4>
+            </div>
+            <div class="bg-brand-orange/10 text-brand-orange text-[10px] px-2 py-1 rounded font-mono">
+              ${Math.round((entry.totalHours/dailyGoal)*100)}% Goal
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-1 pt-2 border-t border-white/5">
+            ${missionsHtml}
+          </div>
+        `;
+        historyContainer.appendChild(entryEl);
+      });
+
+      weeklyTotalDisplay.innerText = `${totalWeeklyHours.toFixed(1)}h`;
+      
+      // Calculate Streak
+      let streak = 0;
+      const today = new Date().setHours(0,0,0,0);
+      let currentStreakDay = today;
+      
+      // Basic streak logic: how many consecutive days in history (ignoring today since it's not saved yet)
+      const uniqueDays = [...new Set(studyHistory.map(h => new Date(h.id).setHours(0,0,0,0)))].sort((a,b) => b-a);
+      
+      // Check if last entry was today or yesterday
+      if (uniqueDays.length > 0) {
+        let lastLogged = uniqueDays[0];
+        const oneDayMs = 24 * 60 * 60 * 1000;
+        
+        if (lastLogged === today || lastLogged === today - oneDayMs) {
+          for (let i = 0; i < uniqueDays.length; i++) {
+            if (i === 0) {
+               streak = 1;
+            } else {
+               if (uniqueDays[i-1] - uniqueDays[i] <= oneDayMs) {
+                 streak++;
+               } else {
+                 break;
+               }
+            }
+          }
+        }
+      }
+      streakDisplay.innerText = `${streak} Day${streak === 1 ? '' : 's'}`;
+    }
+
+    window.toggleMission = (id) => {
+      missions = missions.map(m => m.id === id ? { ...m, completed: !m.completed } : m);
+      render();
+    };
+
+    window.deleteMission = (id) => {
+      missions = missions.filter(m => m.id !== id);
+      render();
+    };
+
+    // --- Event Handlers ---
+    document.getElementById('add-task-btn').addEventListener('click', () => {
+      taskModal.classList.remove('hidden');
+      document.getElementById('task-input-name').focus();
+    });
+
+    document.getElementById('cancel-task').addEventListener('click', () => {
+      taskModal.classList.add('hidden');
+    });
+
+    document.getElementById('save-task').addEventListener('click', () => {
+      const name = document.getElementById('task-input-name').value;
+      const hours = document.getElementById('task-input-hours').value;
+      
+      if (name && hours) {
+        missions.push({
+          id: Date.now(),
+          name,
+          hours: parseFloat(hours),
+          completed: false
+        });
+        document.getElementById('task-input-name').value = '';
+        document.getElementById('task-input-hours').value = '';
+        taskModal.classList.add('hidden');
+        render();
+      }
+    });
+
+    document.getElementById('complete-day-btn').addEventListener('click', () => {
+      const completedTasks = missions.filter(m => m.completed).map(m => m.name);
+      const totalHours = missions.filter(m => m.completed).reduce((sum, m) => sum + parseFloat(m.hours), 0);
+
+      if (totalHours === 0 && !confirm("Save day with 0 hours logged?")) return;
+
+      const dayLog = {
+        id: Date.now(),
+        totalHours: totalHours,
+        completedTasks: completedTasks
+      };
+
+      studyHistory.push(dayLog);
+      
+      // Reset missions for the new day but keep the tasks (reset completion)
+      missions = missions.map(m => ({ ...m, completed: false }));
+      
+      render();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+
+    // Vision Board persistence
+    visionUpload.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const result = event.target.result;
+          visionImage.src = result;
+          localStorage.setItem('visionImage', result);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Initial Load
+    const savedVision = localStorage.getItem('visionImage');
+    if (savedVision) visionImage.src = savedVision;
+    render();
+  </script>
+<!-- END: InteractivityScript -->
+</body></html>
